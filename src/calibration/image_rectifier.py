@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.image_parser import stereo_calibration_images, stereo_images, stereo_occlusion_images
+from src.calibration.image_parser import stereo_calibration_images, stereo_images, stereo_occlusion_images
 
 
 class ImageRectifier:
@@ -62,8 +62,6 @@ class ImageRectifier:
             left_images, right_images = stereo_images()
 
         _, lmtx, ldist, _, _, lobj, limg, _, rmtx, rdist, _, _, robj, rimg = ImageRectifier.calibrate_stereo_camera()
-        # undistorted_left = ImageRectifier.undistor_images(left_images, lmtx, ldist)
-        # undistorted_right = ImageRectifier.undistor_images(right_images, rmtx, rdist)
 
         h, w, _ = cv2.imread(left_images[0]).shape
         stereocalibration_flags = cv2.CALIB_FIX_INTRINSIC
