@@ -18,9 +18,9 @@ To generate rectified images, run the "calibration_undistortion" script in src/c
 ### Detection
 1. Take first frame as a reference.
 2. For each next frame
-3.      Find different areas comparing it with the first frame.
-4.      Find features in stereo in the different areas.
-5.      TODO find a way to restart the features match
-6.      for the feature find XYZ
-7.      Kallman filter on XYZ.
-8.      If feature meassing then continue the point inside the convoy belt. (calculate velocity???)
+3. Find different areas comparing it with the first frame.
+4. Find features in stereo in the different areas.
+5. TODO find a way to restart the features match
+6. for the feature find XYZ
+7. Kallman filter on XYZ.
+8. If feature meassing then continue the point inside the convoy belt. (calculate velocity???)
