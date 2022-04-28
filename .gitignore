@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+src/classification/YOLOv4/obj.zip
+src/classification/YOLOv4/backup/yolov4-obj_1000.weights
+src/classification/YOLOv4/backup/yolov4-obj_last.weights
