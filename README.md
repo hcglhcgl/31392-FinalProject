@@ -13,8 +13,9 @@ Project Goals
     - Use the web or/and capture your own images to create your training set. The image datasets provided with the project will constitute your testing set.git
 
 ## Method
-
-#### Detection
+### Calibration
+To generate rectified images, run the "calibration_undistortion" script in src/calibration
+### Detection
 1. Take first frame as a reference.
 2. For each next frame
 3.      Find different areas comparing it with the first frame.
