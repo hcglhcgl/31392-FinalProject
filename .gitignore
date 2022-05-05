@@ -137,3 +137,5 @@ src/classification/YOLOv4/backup/yolov4-obj_last.weights
 src/detection/.ipynb_checkpoints/feature_finder-checkpoint.ipynb
 src/detection/.ipynb_checkpoints/find_xy-checkpoint.ipynb
 src/detection/.ipynb_checkpoints/frame_differences-checkpoint.ipynb
+src/classification/backup/yolov4-obj_last.weights
+src/classification/backup/yolov4-obj_1000.weights
