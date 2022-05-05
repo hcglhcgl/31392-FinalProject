@@ -130,3 +130,10 @@ dmypy.json
 src/classification/YOLOv4/obj.zip
 src/classification/YOLOv4/backup/yolov4-obj_1000.weights
 src/classification/YOLOv4/backup/yolov4-obj_last.weights
+.ipynb_checkpoints/Exercise 1 - Monochrome camera calibration-checkpoint.ipynb
+.ipynb_checkpoints/Final project - undistortion - rectify-checkpoint.ipynb
+.ipynb_checkpoints/FinalProject-checkpoint.ipynb
+.ipynb_checkpoints/README-checkpoint.md
+src/detection/.ipynb_checkpoints/feature_finder-checkpoint.ipynb
+src/detection/.ipynb_checkpoints/find_xy-checkpoint.ipynb
+src/detection/.ipynb_checkpoints/frame_differences-checkpoint.ipynb
