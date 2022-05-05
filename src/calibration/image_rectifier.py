@@ -99,13 +99,13 @@ def main():
     i = 0
     for img in left_convoy:
         plt.imshow(img)
-        plt.imsave('../../rectified/left/' + str(i) + '.png', img)
+        plt.imsave('../../rectified/left/' + str(i+10000) + '.png', img)
         i = i + 1
 
     i = 0
     for img in right_convoy:
         plt.imshow(img)
-        plt.imsave('../../rectified/right/' + str(i) + '.png', img)
+        plt.imsave('../../rectified/right/' + str(i+10000) + '.png', img)
         i = i + 1
 
 
