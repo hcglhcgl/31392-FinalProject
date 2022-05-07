@@ -1,9 +1,9 @@
 from skimage.metrics import structural_similarity
-from src.calibration.image_parser import rectified
+from src.calibration.image_parser import rectified, rectified_occlusion
 import cv2
 import numpy as np
 
-from src.perception.optical_flow import optical_flow_frames_corner
+from src.perception.optical_flow import OpticalFlow
 
 
 def treat_image(img: np.ndarray) -> np.ndarray:
@@ -68,11 +68,13 @@ def main(start):
     # check here how variables are initialized. images are objects and contains references to it. use copy so we make
     # sure we do not use the same when changing the variable.
     # basically we keep track of the first frame, current frame and previous frame.
-    (left_imgs, right_imgs) = rectified()
+    (left_imgs, right_imgs) = rectified_occlusion()
     previous_img = cv2.imread(left_imgs[0])
     left_imgs = left_imgs[start:-1]
     first_img = previous_img.copy()
     points = None
+    # Initialize optical flow class
+    optical_flow = OpticalFlow()
     for idx, img in enumerate(left_imgs):
         if idx == 0:
             continue
@@ -82,7 +84,7 @@ def main(start):
         if masked is False:
             points = None
         else:
-            points = optical_flow_frames_corner(previous_img, moved_img, points)
+            points = optical_flow.optical_flow_ORB(previous_img, moved_img, points)
 
             showing_img = moved_img.copy()
             # optical flow can find no points. so we need to check for nulls before.
@@ -96,6 +98,7 @@ def main(start):
         # frame is the original frame, and moved_img is the frame cropped and showing the points of optical flow.
         display = np.hstack((moved_img, cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)))
 
+        display = cv2.cvtColor(display, cv2.COLOR_BGR2GRAY)
         cv2.destroyAllWindows()
         cv2.imshow(str(idx), display)
 
@@ -103,7 +106,6 @@ def main(start):
         cv2.waitKey(100)
 
 
-
 if __name__ == '__main__':
     # you can pass here the frame number and it will start from that frame. Useful for debugging ...
-    main(0)
+    main(70)

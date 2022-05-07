@@ -91,22 +91,28 @@ class ImageRectifier:
 
 
 def main():
-    '''
-
-    :return:
-    '''
-    left_convoy, right_convoy = ImageRectifier.rectify_conveyor_images()
+    occlusion = True
+    left_convoy, right_convoy = ImageRectifier.rectify_conveyor_images(occlusion)
     i = 0
     for img in left_convoy:
         plt.imshow(img)
-        plt.imsave('../../rectified/left/' + str(i+10000) + '.png', img)
+        if occlusion:
+            plt.imsave('../../rectified_obscured/left/' + str(i + 10000) + '.png', img)
+        else:
+            plt.imsave('../../rectified/left/' + str(i+10000) + '.png', img)
+        print('left ' + str(i) + ' rectified' )
         i = i + 1
 
     i = 0
     for img in right_convoy:
         plt.imshow(img)
-        plt.imsave('../../rectified/right/' + str(i+10000) + '.png', img)
+        if occlusion:
+            plt.imsave('../../rectified_obscured/right/' + str(i+10000) + '.png', img)
+        else:
+            plt.imsave('../../rectified/right/' + str(i+10000) + '.png', img)
+        print('right ' + str(i) + ' rectified')
         i = i + 1
+
 
 
 if __name__ == '__main__':

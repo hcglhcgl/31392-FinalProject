@@ -15,9 +15,15 @@ def stereo_images():
     return _read_stereo_image('../../Stereo_conveyor_without_occlusions/left/*.png',
                               '../../Stereo_conveyor_without_occlusions/right/*.png')
 
+
 def rectified():
     return _read_stereo_image('../../rectified/left/*.png',
                               '../../rectified/right/*.png')
+
+
+def rectified_occlusion():
+    return _read_stereo_image('../../rectified_obscured/left/*.png',
+                              '../../rectified_obscured/right/*.png')
 
 
 def _read_stereo_image(left_filter: str, right_filter: str):
