@@ -225,7 +225,7 @@ def main(start, record):
 
 def kalman_main(start):
     ##### kalman #####
-    F = np.array([[1, 1, 0.5 , 0, 0, 0, 0],  # x
+    F = np.array([[1, 1, 0.5, 0, 0, 0, 0],  # x
                   [0, 1, 1, 0, 0, 0, 0],  # x'
                   [0, 0, 1, 0, 0, 0, 0],  # x''
                   [0, 0, 0, 1, 1, 0, 0],  # y
@@ -244,7 +244,7 @@ def kalman_main(start):
                   [0, 0, 1]])
 
     I = np.identity(7)
-    measurement_noise_cov = 0.7
+    measurement_noise_cov = 0.8
     process_noise_cov = 0.001
 
     kalman = cv2.KalmanFilter(7, 3)
@@ -276,16 +276,12 @@ def kalman_main(start):
     denoiser_res = False
     idx = 0
     timer = 0
-    #data_index = 0
-    #data = []
 
     # generate a static backfround for the first 70 frames. No movement happens in this first frames.
     static_video = images_right[0:70]
     static_background = contour(previous_img, 4)
     for img in static_video:
         static_background = cv2.bitwise_or(static_background, contour(cv2.imread(img), 4))
-        #cv2.imshow('static', static_background)
-        #cv2.waitKey(10)
 
     static_video_l = images_left[0:70]
     static_background_l = contour(previous_img_l, 4)
@@ -296,6 +292,7 @@ def kalman_main(start):
     images_left = images_left[70 + start: -1]
     images_right = images_right[70 + start: -1]
     tracker = Tracking()
+    tracker_left = Tracking()
 
     for frame_l, frame_r in zip(images_left, images_right):
         # skipping first tracking
@@ -324,12 +321,11 @@ def kalman_main(start):
         boxes = filter_contours(boxes)
         (old_x, old_y, w, h) = tracker.track(boxes)
         x, y = get_xy(old_x, old_y, w, h)
-        #display = display_boxes(tracked_movement, img_r, old_x, old_y, w, h)
 
         tracked_movement_l = track_movement_masks(static_background_l, mask_l)
         boxes_l = find_objects(tracked_movement_l)
         boxes_l = filter_contours(boxes_l)
-        (x_l, y_l, w_l, h_l) = tracker.track(boxes_l)
+        (x_l, y_l, w_l, h_l) = tracker_left.track(boxes_l)
         x_l, y_l = get_xy(x_l, y_l, w_l, h_l)
 
         previous_movement = tracked_movement
@@ -348,15 +344,11 @@ def kalman_main(start):
                 previous_x = x
                 previous_y = y
                 initial_state = [int(x), int(y), 550]
-                #data_index = 0
 
             if x > 1090:
                 timer = 0
 
         if boxes is not None and x != 0 and x < 1130 and denoiser_res:
-            #data.append([data_index, x, y])
-            #data_index += 1
-            #timer += 1
             if boxes_l is not None and x_l != 0:
                 disparity = x_l - x
                 z = calculate_z(disparity)
@@ -364,23 +356,13 @@ def kalman_main(start):
                 [[np.float32(x - initial_state[0])], [np.float32(y - initial_state[1])], [np.float32(z)]])
             kalman.correct(measurement)
 
-            cv2.circle(original, (int(x), int(y)), 70, (0, 255, 0), 3)
             text = "Detection"
-            cv2.putText(original, text, (int(x) - 80, int(y) - 80), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+            cv2.putText(original, text, (int(old_x), int(old_y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 255, 0), 2, cv2.LINE_AA)
-            # if x == 0 and y == 0:
-            #     pass
-            # cv2.rectangle(original, (int(old_x), int(old_y)), (int(old_x) + int(w), int(old_y) + int(h)), (0, 255, 0), 2)
+            cv2.rectangle(original, (int(old_x), int(old_y)), (int(old_x) + int(w), int(old_y) + int(h)), (0, 255, 0), 2)
 
             ### Predict the next state
             prediction = kalman.predict()
-            # cv2.circle(original, (int(prediction[0][0] + initial_state[0]), int(prediction[3][0]) + initial_state[1]),
-            #            40, (255, 0, 0), 3)
-            # text = "Kalman Prediction"
-            # cv2.putText(original, text,
-            #             (int(prediction[0][0] + initial_state[0]) - 50, int(prediction[3][0] + initial_state[1]) + 60),
-            #             cv2.FONT_HERSHEY_SIMPLEX, 0.7,
-            #             (255, 0, 0), 2, cv2.LINE_AA)
 
             ### Add text text
             text = "X: " + (int(x)).__str__()
@@ -396,6 +378,7 @@ def kalman_main(start):
             cv2.imshow('Frame', original)
             cv2.waitKey(100)
         else:
+            ### kalman ###
             prediction = kalman.predict()
             text = "X: " + (int(prediction[0][0] + initial_state[0])).__str__()
             cv2.putText(original, text, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2, cv2.LINE_AA)
