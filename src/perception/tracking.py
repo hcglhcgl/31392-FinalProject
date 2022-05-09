@@ -270,12 +270,16 @@ def kalman_main(start):
 
     ### variables ####
     z = 300
-    initial_state = [1150, 285, 550]
+    initial_state = [1150, 285, 450]
     previous_x = 0
     previous_y = 0
     denoiser_res = False
     idx = 0
     timer = 0
+    video_frames = []
+
+    #data = []
+    #indexer = 0
 
     # generate a static backfround for the first 70 frames. No movement happens in this first frames.
     static_video = images_right[0:70]
@@ -343,7 +347,14 @@ def kalman_main(start):
                 kalman.processNoiseCov = np.array(I, np.float32) * process_noise_cov
                 previous_x = x
                 previous_y = y
-                initial_state = [int(x), int(y), 550]
+
+                if boxes_l is not None and x_l != 0:
+                    disparity = x_l - x
+                    z = calculate_z(disparity)
+                else:
+                    z = 540
+                initial_state = [int(x), int(y), z]
+                #indexer = 0
 
             if x > 1090:
                 timer = 0
@@ -373,10 +384,11 @@ def kalman_main(start):
 
             text = "Z: " + (int(z)).__str__()
             cv2.putText(original, text, (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-
+            #indexer += 1
             timer += 1
-            cv2.imshow('Frame', original)
-            cv2.waitKey(100)
+            video_frames.append(original)
+            #cv2.imshow('Frame', original)
+            #cv2.waitKey(10)
         else:
             ### kalman ###
             prediction = kalman.predict()
@@ -386,7 +398,7 @@ def kalman_main(start):
             text = "Y: " + (int(prediction[3][0] + initial_state[1])).__str__()
             cv2.putText(original, text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2, cv2.LINE_AA)
 
-            text = "Z: " + (int(prediction[6][0] + initial_state[2])).__str__()
+            text = "Z: " + (int(prediction[5][0] + initial_state[2])-400).__str__()
             cv2.putText(original, text, (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2, cv2.LINE_AA)
 
             cv2.circle(original, (int(prediction[0][0] + initial_state[0]), int(prediction[3][0] + initial_state[1])),
@@ -408,11 +420,29 @@ def kalman_main(start):
                 cv2.putText(original, text, (result_x - 80, result_y - 80), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                             (0, 211, 255), 2, cv2.LINE_AA)
             timer += 1
-            cv2.imshow('Frame', original)
-            cv2.waitKey(100)
+
+            #data.append([indexer, int(prediction[0][0] + initial_state[0]), int(prediction[3][0] + initial_state[1]), result_x, result_y])
+            #indexer += 1
+            video_frames.append(original)
+            #cv2.imshow('Frame', original)
+            #cv2.waitKey(10)
 
         idx += 1
     cv2.destroyAllWindows()
+
+    # with open('pred_data', 'w') as f:
+    #
+    #     # using csv.writer method from CSV package
+    #     write = csv.writer(f)
+    #     write.writerows(data)
+
+    h, w, d = video_frames[0].shape
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    writer = cv2.VideoWriter('C:/Users/Patrik/Desktop/pf/31392-FinalProject/src/perception/project_video.mp4', fourcc, 10.0, (w, h))
+
+    for frame in video_frames:
+        writer.write(frame)
+    writer.release()
 
 if __name__ == '__main__':
     # you can pass here the frame number and it will start from that frame. Useful for debugging ...
